@@ -1,11 +1,13 @@
 from flask import Flask
 from flask_mysqldb import MySQL
+from flask import jsonify
+
 
 app = Flask(__name__)
-app.config['MYSQL_HOST'] = 'sql3.freemysqlhosting.net'
-app.config['MYSQL_USER'] = 'sql3257909'
-app.config['MYSQL_PASSWORD'] = '4huh44rjk1'
-app.config['MYSQL_DB'] = 'sql3257909'
+app.config['MYSQL_HOST'] = 'myRDSEndpoint'
+app.config['MYSQL_USER'] = 'myRDSUsername'
+app.config['MYSQL_PASSWORD'] = 'myRDSPassword'
+app.config['MYSQL_DB'] = 'myRDSDBName'
 # app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 mysql = MySQL(app)
 
@@ -26,19 +28,24 @@ def add(insert):
     mysql.connection.commit()
     return "Done"
 
-@app.route('/getall')
+@app.route('/getall', methods=['GET'])
 def getall():
     cur = mysql.connection.cursor()
     cur.execute('''SELECT * FROM test''')
     returnvals = cur.fetchall()  # ((1, "ID1"), (2, "ID2"),...)
 
-    printthis = ""
-    for i in returnvals:
-        printthis += str(i) + "<br>"
+    printthis = []
+    # for i in returnvals:
+    #     printthis += str(i) + "<br>"
 
-    return printthis
+    for num in returnvals:
+        printthis.append(num[0])
 
+    print_in_json = jsonify(printthis)
+    # return str(printthis)
+    return print_in_json
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+
