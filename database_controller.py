@@ -2,6 +2,7 @@ from flask import Flask
 from flask_mysqldb import MySQL
 from flask_cors import CORS, cross_origin
 from flask import jsonify
+from random import *
 
 app = Flask(__name__)
 app.config['MYSQL_HOST'] = 'myRDSEndpoint'
@@ -49,8 +50,8 @@ def getall():
     return print_in_json
 
 # send data to test_soccer_rand in DB
-@app.route('/next10')
-def next10():
+@app.route('/insert_new')
+def insert_new():
     cur = mysql.connection.cursor()
     cur.execute('''SELECT * from test_soccer ORDER BY team_id DESC LIMIT 10;''')
     # returnvals = cur.fetchall()[0][1]
@@ -60,6 +61,21 @@ def next10():
             result[1], result[2], result[3], result[4], result[5], result[6]
         cur.execute('''INSERT INTO test_soccer_rand (team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals) 
                         VALUES (%s, %s, %s, %s, %s, %s)''', (team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals))
+    mysql.connection.commit()
+    return str(returnvals)
+
+# send data to test_soccer_rand in DB
+@app.route('/insert_rand')
+def insert_rand():
+    cur = mysql.connection.cursor()
+    cur.execute('''SELECT * from test_soccer ORDER BY team_id DESC LIMIT 10;''')
+    # returnvals = cur.fetchall()[0][1]
+    returnvals = cur.fetchall()
+    for result in returnvals:
+        team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals = \
+            result[1], result[2], result[3], result[4], result[5], result[6]
+        cur.execute('''INSERT INTO test_soccer_rand (team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals) 
+                        VALUES (%s, %s, %s, %s, %s, %s)''', (team_name, team_opponent, match_date, team_winner, randint(4,6), randint(0,3)))
     mysql.connection.commit()
     return str(returnvals)
 
