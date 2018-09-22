@@ -38,6 +38,12 @@ def getall():
     printthis = []
     # for i in returnvals:
     #     printthis += str(i) + "<br>"
+    for num in returnvals:
+        printthis.append(num[0])
+
+    print_in_json = jsonify(printthis)
+    # return str(printthis)
+    return print_in_json
 
     for num in returnvals:
         printthis.append(num[0])
@@ -47,7 +53,6 @@ def getall():
     return print_in_json
 
 
-
-
 if __name__ == '__main__':
     app.run(debug=True)
+
