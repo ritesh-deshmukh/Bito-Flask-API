@@ -64,12 +64,6 @@ def next10():
     return str(returnvals)
 
 
-@app.route('/insert_rand', methods=['POST'])
-def insert_rand():
-    cur = mysql.connection.cursor()
-    cur.execute('''INSERT INTO test (team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals) 
-                    VALUES (%s, %s, %s, %s, %s, %s)''',())
-    pass
 
 
 if __name__ == '__main__':
