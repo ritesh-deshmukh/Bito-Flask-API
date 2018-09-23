@@ -4,7 +4,7 @@ from flask_cors import CORS, cross_origin
 from flask import jsonify
 
 
-app = Flask(__name__)
+application = app = Flask(__name__)
 app.config['MYSQL_HOST'] = 'myRDSEndpoint'
 app.config['MYSQL_USER'] = 'myRDSUsername'
 app.config['MYSQL_PASSWORD'] = 'myRDSPassword'
