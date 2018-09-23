@@ -18,9 +18,9 @@ CORS(app)
 @app.route('/')
 def index():
     cur = mysql.connection.cursor()
-    cur.execute('''SELECT team_name,team_opponent,team_winner FROM test_soccer WHERE team_id = 1''')
-    return_value = cur.fetchall()
-    return str(return_value)
+    cur.execute('''SELECT * FROM test_teams WHERE team_id = 1''')
+    return_value = jsonify(cur.fetchall())
+    return return_value
 
 
 # test route with DB for insert
@@ -37,7 +37,7 @@ def add(insert):
 @app.route('/getall', methods=['GET'])
 def getall():
     cur = mysql.connection.cursor()
-    cur.execute('''SELECT * FROM test_soccer;''')
+    cur.execute('''SELECT * FROM test_teams;''')
     returnvals = cur.fetchall()  # ((1, "ID1"), (2, "ID2"),...)
 
     printthis = []
@@ -53,29 +53,38 @@ def getall():
 @app.route('/insert_new')
 def insert_new():
     cur = mysql.connection.cursor()
-    cur.execute('''SELECT * from test_soccer ORDER BY team_id DESC LIMIT 10;''')
+    cur.execute('''SELECT * from test_teams;''')
     # returnvals = cur.fetchall()[0][1]
     returnvals = cur.fetchall()
+    # for result in returnvals:
+    #     team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals = \
+    #         result[1], result[2], result[3], result[4], result[5], result[6]
+    #     cur.execute('''INSERT INTO test_teams_rand (team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals)
+    #                     VALUES (%s, %s, %s, %s, %s, %s)''', (team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals))
     for result in returnvals:
-        team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals = \
-            result[1], result[2], result[3], result[4], result[5], result[6]
-        cur.execute('''INSERT INTO test_soccer_rand (team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals) 
-                        VALUES (%s, %s, %s, %s, %s, %s)''', (team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals))
+        team_name, team_noofwins, team_goals = result[1], result[2], result[3]
+        cur.execute('''INSERT INTO test_teams_rand (team_name, team_noofwins, team_goals) 
+                        VALUES (%s, %s, %s)''', (team_name, team_noofwins, team_goals))
     mysql.connection.commit()
     return str(returnvals)
+
 
 # send data to test_soccer_rand in DB
 @app.route('/insert_rand')
 def insert_rand():
     cur = mysql.connection.cursor()
-    cur.execute('''SELECT * from test_soccer ORDER BY team_id DESC LIMIT 10;''')
+    cur.execute('''SELECT * from test_teams;''')
     # returnvals = cur.fetchall()[0][1]
     returnvals = cur.fetchall()
+    # for result in returnvals:
+    #     team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals = \
+    #         result[1], result[2], result[3], result[4], result[5], result[6]
+    #     cur.execute('''INSERT INTO test_soccer_rand (team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals)
+    #                     VALUES (%s, %s, %s, %s, %s, %s)''', (team_name, team_opponent, match_date, team_winner, randint(4,6), randint(0,3)))
     for result in returnvals:
-        team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals = \
-            result[1], result[2], result[3], result[4], result[5], result[6]
-        cur.execute('''INSERT INTO test_soccer_rand (team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals) 
-                        VALUES (%s, %s, %s, %s, %s, %s)''', (team_name, team_opponent, match_date, team_winner, randint(4,6), randint(0,3)))
+        team_name, team_noofwins, team_goals = result[1], result[2], result[3]
+        cur.execute('''INSERT INTO test_teams_rand (team_name, team_noofwins, team_goals) 
+                        VALUES (%s, %s, %s)''', (team_name, team_noofwins, randint(5,20)))
     mysql.connection.commit()
     return str(returnvals)
 
