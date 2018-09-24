@@ -5,6 +5,7 @@ from flask import jsonify
 from random import *
 
 application = app = Flask(__name__)
+# add your database credentials below
 app.config['MYSQL_HOST'] = 'myRDSEndpoint'
 app.config['MYSQL_USER'] = 'myRDSUsername'
 app.config['MYSQL_PASSWORD'] = 'myRDSPassword'
@@ -23,44 +24,36 @@ def index():
     return return_value
 
 
-# test route with DB for insert
-@app.route('/addone/<string:insert>')
-def add(insert):
-    cur = mysql.connection.cursor()
-    cur.execute('''SELECT MAX(id) FROM test''')
-    maxid = cur.fetchone()  # (10,)
-    cur.execute('''INSERT INTO test (id, data) VALUES (%s, %s)''', (maxid[0] + 1, insert))
-    mysql.connection.commit()
-    return "Done"
+# # test route with DB for insert
+# @app.route('/addone/<string:insert>')
+# def add(insert):
+#     cur = mysql.connection.cursor()
+#     cur.execute('''SELECT MAX(id) FROM test''')
+#     maxid = cur.fetchone()  # (10,)
+#     cur.execute('''INSERT INTO test (id, data) VALUES (%s, %s)''', (maxid[0] + 1, insert))
+#     mysql.connection.commit()
+#     return "Done"
 
 
 @app.route('/getall', methods=['GET'])
 def getall():
     cur = mysql.connection.cursor()
     cur.execute('''SELECT * FROM test_teams;''')
-    returnvals = cur.fetchall()  # ((1, "ID1"), (2, "ID2"),...)
-
+    returnvals = cur.fetchall()
     printthis = []
-    # for i in returnvals:
-    #     printthis += str(i) + "<br>"
     for num in returnvals:
         printthis.append(num[0])
 
     print_in_json = jsonify(printthis)
     return print_in_json
 
+
 # send data to test_soccer_rand in DB
 @app.route('/insert_new')
 def insert_new():
     cur = mysql.connection.cursor()
     cur.execute('''SELECT * from test_teams;''')
-    # returnvals = cur.fetchall()[0][1]
     returnvals = cur.fetchall()
-    # for result in returnvals:
-    #     team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals = \
-    #         result[1], result[2], result[3], result[4], result[5], result[6]
-    #     cur.execute('''INSERT INTO test_teams_rand (team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals)
-    #                     VALUES (%s, %s, %s, %s, %s, %s)''', (team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals))
     for result in returnvals:
         team_name, team_noofwins, team_goals = result[1], result[2], result[3]
         cur.execute('''INSERT INTO test_teams_rand (team_name, team_noofwins, team_goals) 
@@ -70,27 +63,30 @@ def insert_new():
 
 
 # send data to test_soccer_rand in DB
-@app.route('/insert_rand')
-def insert_rand():
+@app.route('/insert_random')
+def insert_random():
+    count_dict = {}
+    count_dict['count'] = []
     cur = mysql.connection.cursor()
-    cur.execute('''SELECT * from test_teams;''')
-    # returnvals = cur.fetchall()[0][1]
-    returnvals = cur.fetchall()
-    # for result in returnvals:
-    #     team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals = \
-    #         result[1], result[2], result[3], result[4], result[5], result[6]
-    #     cur.execute('''INSERT INTO test_soccer_rand (team_name, team_opponent, match_date, team_winner, team_winner_goals, team_other_goals)
-    #                     VALUES (%s, %s, %s, %s, %s, %s)''', (team_name, team_opponent, match_date, team_winner, randint(4,6), randint(0,3)))
-    for result in returnvals:
-        team_name, team_noofwins, team_goals = result[1], result[2], result[3]
-        cur.execute('''INSERT INTO test_teams_rand (team_name, team_noofwins, team_goals) 
-                        VALUES (%s, %s, %s)''', (team_name, team_noofwins, randint(5,20)))
-    mysql.connection.commit()
-    return str(returnvals)
-
-
+    cur.execute('''SELECT * from test_teams_rand;''')
+    check_100 = cur.fetchall()
+    for result in check_100:
+        count_dict['count'].append(result[0])
+    if len(count_dict['count']) > 100:
+        cur.execute('''DELETE FROM test_teams_rand ORDER BY team_id ASC LIMIT 10''')
+        mysql.connection.commit()
+        return "<h1>Data Inserted</h1>"
+    else:
+        cur.execute('''SELECT * FROM test_teams;''')
+        returnvals = cur.fetchall()
+        for result in returnvals:
+            team_name, team_noofwins, team_goals = result[1], result[2], result[3]
+            cur.execute('''INSERT INTO test_teams_rand (team_name, team_noofwins, team_goals) 
+                            VALUES (%s, %s, %s)''', (team_name, team_noofwins, randint(5,20)))
+        mysql.connection.commit()
+        return "<h1>Data Inserted</h1>"
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='127.0.0.1', port=5000)
 
