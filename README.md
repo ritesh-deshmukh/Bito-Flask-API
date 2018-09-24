@@ -1,5 +1,6 @@
 <h1><b>Bito Visualization API</b></h1>
 <h2>Deployed to AWS Elastic Beanstalk</h2>
+<p>Python Flask API</p>
 
 <h2>MySQL Database on Amazon RDS</h2>
 
