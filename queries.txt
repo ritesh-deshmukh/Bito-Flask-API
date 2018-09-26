@@ -1,0 +1,41 @@
+List of queries used for multiple operations on the MySQL server on Amazon Relational Database Service
+
+CREATE TABLE IF NOT EXISTS test_teams (
+    team_id INT AUTO_INCREMENT,
+    team_name VARCHAR(255) NOT NULL,
+    team_noofwins INT,
+    team_goals INT,
+    PRIMARY KEY (team_id)
+);
+
+CREATE TABLE IF NOT EXISTS test_teams_rand (
+    team_id INT AUTO_INCREMENT,
+    team_name VARCHAR(255) NOT NULL,
+    team_noofwins INT,
+    team_goals INT,
+    PRIMARY KEY (team_id)
+
+
+SELECT * from test_teams;
+SELECT * from test_teams_rand;
+
+TRUNCATE TABLE test_teams;
+TRUNCATE TABLE test_teams_rand;
+
+DROP TABLE test_teams;
+DROP TABLE test_teams_rand;
+
+DELETE FROM test_teams_rand ORDER BY team_id ASC LIMIT 10;
+ALTER TABLE test_teams_rand AUTO_INCREMENT = 1;
+
+
+INSERT INTO test_teams VALUES(Default, 'Brazil', 12, 15);
+INSERT INTO test_teams VALUES(Default, 'Argentina', 11, 14);
+INSERT INTO test_teams VALUES(Default, 'England', 9, 16);
+INSERT INTO test_teams VALUES(Default, 'France', 14, 20);
+INSERT INTO test_teams VALUES(Default, 'Germany', 8, 17);
+INSERT INTO test_teams VALUES(Default, 'Spain', 11, 10);
+INSERT INTO test_teams VALUES(Default, 'Uruguay', 6, 12);
+INSERT INTO test_teams VALUES(Default, 'Sweden', 3, 8);
+INSERT INTO test_teams VALUES(Default, 'Egypt', 2, 11);
+INSERT INTO test_teams VALUES(Default, 'Korea', 4, 15);
